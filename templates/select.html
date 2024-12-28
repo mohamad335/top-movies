@@ -3,11 +3,12 @@
 {% block title %}Select Movie{% endblock %}
 
 {% block content %}
-{% for movie in options %}
 <div class="container">
     <h1 class="heading">Select Movie</h1>
+  
+{% for movie in options %}
   <p>
-    <a href="#"> {{movie.rate}} - {{ movie.release_date }}</a>
+    <a href="{{ url_for('find_movie',id=movie.id) }}">{{movie.title}} - {{ movie.release_date }}</a>
   </p>
 
 </div>

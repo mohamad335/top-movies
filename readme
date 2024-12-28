@@ -1,1 +1,4 @@
-our project Today to build a website just like that using Flask/WTForms/SQLite/SQLAlchemy and more. It will allow us to create a beautiful website that lists our top 10 films of all time. As we watch more movies, we can always update our list and keep track of which movies to recommend people.
+our project Today to build a website top 10 movies list just like that using Flask/WTForms/SQLite/SQLAlchemy and more. It will allow us to create a beautiful website that lists our top 10 films of all time. As we watch more movies, we can always update our list and keep track of which movies to recommend people.
+so first we get our information such as discreption of movie and title and rating also img from the mbd source by using api and request
+also we can update our rating and review and we can delete the movie or add movie as we need 
+its a amazing project we use a lot if things that help us to learn more about python

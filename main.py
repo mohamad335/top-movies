@@ -7,11 +7,16 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 import requests
-
-MOVIES_API_KEY = "Enter your api"
-MOVIES_API_URL = "enter the url"
+from dotenv import load_dotenv
+import os
+load_dotenv()
+movies_api_key = os.getenv("MOVIES_API_KEY")
+movies_api_url =os.getenv("MOVIES_API_URL")
+movies_api_details=os.getenv("MOVIES_API_DETAILS")
+movies_url_image= os.getenv("MOVIES_URL_IMAGE")
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+
 Bootstrap5(app)
 
 # CREATE DB
@@ -44,8 +49,10 @@ class AddMovie(FlaskForm):
 
 @app.route("/")
 def home():
-    result = db.session.execute(db.select(Movie))
+    result = db.session.execute(db.select(Movie).order_by(Movie.rating))
     all_movies = result.scalars().all()
+    for i in range(len(all_movies)):
+        all_movies[i].ranking = len(all_movies) - i
     return render_template("index.html",movies=all_movies)
 @app.route("/edit", methods=["GET", "POST"])
 def update_rate():
@@ -69,11 +76,23 @@ def delete_movie():
 def add_movie():
     form = AddMovie()
     if form.validate_on_submit():
-        response = requests.get(MOVIES_API_URL, params={"api_key": MOVIES_API_KEY, "query": form.title.data})
+        response = requests.get(movies_api_url, params={"api_key": movies_api_key, "query": form.title.data})
         data = response.json()["results"]
         return render_template("select.html", options=data)
     return render_template("add.html", form=form)
-    
-
+@app.route("/find")
+def find_movie():
+    movie_details_url = f"{movies_api_details.replace('movie_id', request.args.get('id'))}"
+    response = requests.get(movie_details_url, params={"api_key": movies_api_key})
+    data = response.json()
+    new_movie = Movie(
+        title=data["title"],
+        year=data["release_date"].split("-")[0],
+        description=data["overview"],
+        img_url=f"{movies_url_image}{data['poster_path']}"
+    )
+    db.session.add(new_movie)
+    db.session.commit()
+    return redirect(url_for("home"))
 if __name__ == '__main__':
     app.run(debug=True)
